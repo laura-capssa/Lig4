@@ -9,32 +9,32 @@ def imprimir_tabuleiro(tab):
     simbolos = {0: ' ', 1: '★', 2: '●'}  #maquina bolinha, eu estrela
     for linha in tab:
         print('|' + '|'.join(simbolos[x] for x in linha) + '|')
-    print('-' * (COLS * 2 + 1))
+    print('-' * (COLS * 2 + 1)) 
 
-def coluna_valida(tab, col):
+def coluna_valida(tab, col): #valida se a celula do topo é vazia
     return tab[0][col] == 0
 
 def fazer_jogada(tab, col, jogador):
     for i in range(ROWS-1, -1, -1): #comeca de baixo pra cima
         if tab[i][col] == 0:
-            tab[i][col] = jogador #se ta vazio coloca o simbolo do jogador
+            tab[i][col] = jogador #coloca o simbolo do jogador
             return True
-    return False
+    return False #se ta cheia
 
-def desfazer_jogada(tab, col):
+def desfazer_jogada(tab, col): #pro minimax simular
     for i in range(ROWS):
         if tab[i][col] != 0:
             tab[i][col] = 0
             return
 
-def verificar_vencedor(tab, jogador):
-    # Horizontal, ve se fez 4 pontos 
+def verificar_vencedor(tab, jogador): #ve se ja fez 4 seguidos em linha
+    # Horizontal 
     for r in range(ROWS):
-        for c in range(COLS - 3):
+        for c in range(COLS - 3): #7-3=4.  [0-3], [1-4], [2-5], [3-6]
             if all(tab[r][c+i] == jogador for i in range(4)):
                 return True
             
-    # Vertical, ve se fez 4 pontos
+    # Vertical
     for c in range(COLS):
         for r in range(ROWS - 3):
             if all(tab[r+i][c] == jogador for i in range(4)):
@@ -53,18 +53,20 @@ def verificar_vencedor(tab, jogador):
                 return True
     return False
 
-def tabuleiro_cheio(tab):
+def tabuleiro_cheio(tab): #se todas as linhas do topo estiverem cheias
     return all(tab[0][c] != 0 for c in range(COLS))
 
 def avaliar_janela(janela, jogador):
-    # Avalia uma janela de 4 posições para heurística
+    # Avalia uma janela de 4 posições para heurística minimax
     pontuacao = 0
     oponente = 1 if jogador == 2 else 2
 
     if janela.count(jogador) == 4:
         pontuacao += 100
+
     elif janela.count(jogador) == 3 and janela.count(0) == 1:
         pontuacao += 5
+
     elif janela.count(jogador) == 2 and janela.count(0) == 2:
         pontuacao += 2
 
@@ -76,7 +78,7 @@ def avaliar_janela(janela, jogador):
 def avaliar_tabuleiro(tab, jogador):
     pontuacao = 0
 
-    # Centro (prioriza coluna do meio)
+    # Centro pq mais chance linha 
     centro = [tab[r][COLS//2] for r in range(ROWS)]
     pontuacao += centro.count(jogador) * 3
 
